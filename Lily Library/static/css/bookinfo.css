@@ -1,0 +1,67 @@
+body {
+    background-color:#e7e6e2;
+    margin: 0;
+}
+
+.container {
+    display: flex; /* Use flexbox layout */
+    text-align: left;
+}
+
+.leftDiv, .middleDiv, .rightDiv {
+    flex: 1; /* Each div takes up equal space */
+    text-align: left;
+    margin: 0 auto;
+}
+
+div {
+    display:inline-block;
+}
+
+.reviews p {
+    font-weight: 550;
+}
+
+.reviews span {
+    color: grey;
+}
+
+.reviews i {
+    color: #fcba03;
+}
+
+ul {
+    list-style: none;
+}
+
+.ratingBar {
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.bar {
+    display: inline-block;
+    height: 5px;
+    background-color: #fcba03; 
+    margin: 0 auto;
+}
+
+.rating span {
+    margin-right: 5px;
+    color: grey;
+    text-align: left;
+    width: 300px;
+}
+
+
+  
+
+
+

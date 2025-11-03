@@ -1,0 +1,15 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+{% endblock %}
+{%block content%}
+    <h5>Change your personal email address</h5>
+    <!--Creates a HTML form element to display the changeEmailForm fields and allows reader to change personal email, data is sent to changeEmail route when POST request submitted-->
+    <form action="/changeEmail" method="POST">
+        {{changeEmailForm.hidden_tag()}}
+        <p>{{changeEmailForm.schoolEmail.label}}</p>
+        <p>{{changeEmailForm.schoolEmail()}}</p>
+        <p>{{changeEmailForm.personalEmail.label}}</p>
+        <p>{{changeEmailForm.personalEmail()}}</p>
+        <p>{{changeEmailForm.submit()}}</p>
+    </form>
+{% endblock %}

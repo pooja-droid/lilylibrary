@@ -1,0 +1,26 @@
+{% extends "welcomepage.html" %} 
+{% block head %} 
+{% endblock %} 
+{%block content%}
+<!--Search bar to allow librarian to search for any reader in the library database-->
+<h3>Search for Reader Account Information</h3>
+    <!--Create HTML form element to display readerSearchForm fields and when POST request submitted send data to manageaccounts route-->
+    <form action="/manageaccounts" method="POST">
+        {{readerSearchForm.hidden_tag()}}
+        <p>{{readerSearchForm.readerName.label}}</p>
+        <p>{{readerSearchForm.readerName(placeholder="Search...")}}</p>
+        <p>{{readerSearchForm.search()}}</p>
+    </form>
+
+    <!--If any readers returned in search results, display their information and offer options, to update their information, delete them from the library or view their loans and reservatins and reddirect to those respective routes-->
+    {% if readerSearchResults %}
+        {% for result in readerSearchResults %}
+            <div>
+                <i class="fa-solid fa-user"></i>
+                <h4>Name: {{result[1]}} {{result[2]}}</h4>
+                <h5>Year Group: {{result[3]}} Houseroom: {{result[4]}}</h5>
+                <a href="{{url_for('updatereader', readerID=result[0])}}"><button style="display:inline-block">Update Reader Information</button></a><a href="{{url_for('deletereader', readerID=result[0])}}"><button style="display:inline-block">Delete Reader</button></a><a href="{{url_for('loansandreservations', readerID=result[0])}}"><button style="display:inline-block">View Reader Loans &amp; Reservations</button></a>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

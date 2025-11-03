@@ -1,0 +1,105 @@
+
+body {
+  margin: 0;
+}
+
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+  }
+  
+.navbar li {
+    float: left;
+  }
+  
+.navbar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+.navbar li a:hover {
+    background-color: #111;
+  }
+
+#searchResults li{
+    color: black;
+    background-color: white;
+}
+
+#searchResults ul{
+  color: black;
+  background-color: white;
+}
+
+
+div {
+    text-align: center;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#notify {
+  position: relative;
+}
+
+
+#notify li{
+  position: relative;
+  padding: 0;
+}
+
+#notification {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  background-color: red;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  text-align: center;
+  z-index:1;
+  display:inline-block;
+}
+
+#usericon {
+  background-color: #333;
+  color: white;
+  font-size: 1.5em;
+  display: inline-block;
+  position:relative;
+  display:inline-block;
+}
+
+h1 {
+    font-family: "Tahoma";
+    font-weight: bold;
+    word-spacing: 2px;
+    padding: 20px;
+    border-radius: 50px;
+    background-color: #a52336;
+    color: white;
+}
+
+#dropdownAccountLinks {
+  display: none;
+  color: white;
+}
+
+#accountLinks {
+  margin: 10px;
+}
+
+#accountLinks:hover #dropdownAccountLinks {
+  display: block;
+}
+
+ul {
+  list-style: none;
+}

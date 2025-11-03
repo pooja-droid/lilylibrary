@@ -1,0 +1,258 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+<!--Link to registerpage.css stylesheet whose styles will override certain styles in welcomepage.css but maintain the navbar and its styling-->
+<link rel="stylesheet" href="{{url_for('static', filename='css/registerpage.css')}}">
+<script>
+    // Function to validate user's password so that they are not allowed to set a weak password
+    function validatePassword() {
+        // Get the password input field
+        var password = document.getElementById("{{ registerForm.readerPassword.id }}");
+        // Get the strength criteria elements
+        var letter = document.getElementById("letter");
+        var capital = document.getElementById("capital");
+        var number = document.getElementById("number");
+        var special  = document.getElementById("special")
+        var length = document.getElementById("length");
+
+        // Show message on how to set password and criteria elements when password field is clicked
+        password.addEventListener("click", function() {
+            document.getElementById("message").style.display = "block";
+        });
+
+        // Hide message when focus is lost from password field
+        password.addEventListener("blur", function() {
+            document.getElementById("message").style.display = "none";
+        });
+
+        // When the user starts to type something inside the password field, validate password strength on keyup event
+        password.onkeyup = function() {
+            // Validate if there are lowercase letters and if so add to valid class so criteria appears fulfilled, if not add to invalid class to show criteria as unfuflilled
+            var lowerCaseLetters = /[a-z]/g;
+            if (password.value.match(lowerCaseLetters)) {
+                letter.classList.remove("invalid");
+                letter.classList.add("valid");
+            } else {
+                letter.classList.remove("valid");
+                letter.classList.add("invalid");
+            }
+
+            // Validate if there are captial letters and if so add to valid class so criteria appears fulfilled, if not add to invalid class to show criteria as unfuflilled
+            var upperCaseLetters = /[A-Z]/g;
+            if (password.value.match(upperCaseLetters)) {
+                capital.classList.remove("invalid");
+                capital.classList.add("valid");
+            } else {
+                capital.classList.remove("valid");
+                capital.classList.add("invalid");
+            }
+
+            // Validate if there are numbers and if so add to valid class so criteria appears fulfilled, if not add to invalid class to show criteria as unfuflilled
+            var numbers = /[0-9]/g;
+            if (password.value.match(numbers)) {
+                number.classList.remove("invalid");
+                number.classList.add("valid");
+            } else {
+                number.classList.remove("valid");
+                number.classList.add("invalid");
+            }
+
+            // Validate if there are lowercase letters and if so add to valid class so criteria appears fulfilled, if not add to invalid class to show criteria as unfuflilled
+            var specialCharacters = /[@$!%*&]/g;
+            if (password.value.match(specialCharacters)) {
+                special.classList.remove("invalid");
+                special.classList.add("valid");
+            } else {
+                special.classList.remove("valid");
+                special.classList.add("invalid");
+            }
+
+            // Validate length and if so add to valid class so criteria appears fulfilled, if not add to invalid class to show criteria as unfuflilled
+            if (password.value.length >= 4 && password.value.length <= 15)  {
+                length.classList.remove("invalid");
+                length.classList.add("valid");
+            } else {
+                length.classList.remove("valid");
+                length.classList.add("invalid");
+            }
+        }
+    }
+
+    // Function to add event listener to password field that will call validatePassword when the field is clicked
+    function addEventListenerToPasswordField() {
+        var passwordField = document.querySelector("#{{ registerForm.readerPassword.id }}");
+        passwordField.addEventListener("click", validatePassword);
+    }
+
+    // Function to toggle the visibility of the admin code field based on the selected yeargroup
+    function showAdminCode() {
+        // Get the year group form field
+        var yearGroupField = document.querySelector("#{{registerForm.readerYearGroup.id}}");
+        // Get the admin code container
+        var adminCodeContainer = document.querySelector("#adminCode");
+        
+        // Add an event listener to the year group to listen for a change to its value
+        yearGroupField.addEventListener("change", function() {
+            // If the value is 1, i.e. the user has selected the Librarian option they will have to enter an admin code
+            if (yearGroupField.value === "1") {
+                // Make admin code display 'block'
+                adminCodeContainer.style.display = "block";
+            } else {
+            // Make admin code display 'none'
+                adminCodeContainer.style.display = "none";
+            }
+        });
+
+    };
+    // Function to dynamically update the options for the houserrom select field in the register form based on the year group selected
+    function updateHouseroomOptions() {
+        // Get the year group field value
+        var yearGroup = document.getElementById('{{ registerForm.readerYearGroup.id }}').value;
+        // Get the houseroom select field
+        var houseroomSelectField = document.getElementById('{{ registerForm.readerHouseroom.id }}');
+        houseroomSelectField.innerHTML = '';
+        console.log(yearGroup);
+        // Call the addOption function to add custom options to the select field based on what value the yearGroup field holds
+        if (yearGroup === '7') {
+            addOption(houseroomSelectField, 'Le7', 'Le7');
+            addOption(houseroomSelectField, 'Ma7', 'Ma7');
+            addOption(houseroomSelectField, 'Wa7', 'Wa7');
+            addOption(houseroomSelectField, 'Ch7', 'Ch7');
+            addOption(houseroomSelectField, 'Wi7', 'Wi7');
+            addOption(houseroomSelectField, 'Ca7', 'Ca7');
+        } else if (yearGroup === '8') {
+            addOption(houseroomSelectField, 'Le6', 'Le6');
+            addOption(houseroomSelectField, 'Ma6', 'Ma6');
+            addOption(houseroomSelectField, 'Wa6', 'Wa6');
+            addOption(houseroomSelectField, 'Ch6', 'Ch6');
+            addOption(houseroomSelectField, 'Wi6', 'Wi6');
+            addOption(houseroomSelectField, 'Ca6', 'Ca6');
+        } else if (yearGroup === '9') {
+            addOption(houseroomSelectField, 'Le5', 'Le5');
+            addOption(houseroomSelectField, 'Ma5', 'Ma5');
+            addOption(houseroomSelectField, 'Wa5', 'Wa5');
+            addOption(houseroomSelectField, 'Ch5', 'Ch5');
+            addOption(houseroomSelectField, 'Wi5', 'Wi5');
+            addOption(houseroomSelectField, 'Ca5', 'Ca5');
+        } else if (yearGroup === '10') {
+            addOption(houseroomSelectField, 'Le4', 'Le4');
+            addOption(houseroomSelectField, 'Ma4', 'Ma4');
+            addOption(houseroomSelectField, 'Wa4', 'Wa4');
+            addOption(houseroomSelectField, 'Ch4', 'Ch4');
+            addOption(houseroomSelectField, 'Wi4', 'Wi4');
+            addOption(houseroomSelectField, 'Ca4', 'Ca4');
+        } else if (yearGroup === '11') {
+            addOption(houseroomSelectField, 'Le3', 'Le3');
+            addOption(houseroomSelectField, 'Ma3', 'Ma3');
+            addOption(houseroomSelectField, 'Wa3', 'Wa3');
+            addOption(houseroomSelectField, 'Ch3', 'Ch3');
+            addOption(houseroomSelectField, 'Wi3', 'Wi3');
+            addOption(houseroomSelectField, 'Ca3', 'Ca3');
+        } else if (yearGroup === '12') {
+            addOption(houseroomSelectField, 'Le2a', 'Le2a');
+            addOption(houseroomSelectField, 'Le2b', 'Le2b');
+            addOption(houseroomSelectField, 'Ma2a', 'Ma2a');
+            addOption(houseroomSelectField, 'Ma2b', 'Ma2b');
+            addOption(houseroomSelectField, 'Wa2a', 'Wa2a');
+            addOption(houseroomSelectField, 'Wa2b', 'Wa2b');
+            addOption(houseroomSelectField, 'Ch2a', 'Ch2a');
+            addOption(houseroomSelectField, 'Ch2b', 'Ch2b');
+            addOption(houseroomSelectField, 'Wi2a', 'Wi2a');
+            addOption(houseroomSelectField, 'Wi2b', 'Wi2b');
+            addOption(houseroomSelectField, 'Ca2a', 'Ca2a');
+            addOption(houseroomSelectField, 'Ca2b', 'Ca2b');
+        } else if (yearGroup === '13') {
+            addOption(houseroomSelectField, 'Le1a', 'Le1a');
+            addOption(houseroomSelectField, 'Le1b', 'Le1b');
+            addOption(houseroomSelectField, 'Ma1a', 'Ma1a');
+            addOption(houseroomSelectField, 'Ma1b', 'Ma1b');
+            addOption(houseroomSelectField, 'Wa1a', 'Wa1a');
+            addOption(houseroomSelectField, 'Wa1b', 'Wa1b');
+            addOption(houseroomSelectField, 'Ch1a', 'Ch1a');
+            addOption(houseroomSelectField, 'Ch1b', 'Ch1b');
+            addOption(houseroomSelectField, 'Wi1a', 'Wi1a');
+            addOption(houseroomSelectField, 'Wi1b', 'Wi1b');
+            addOption(houseroomSelectField, 'Ca1a', 'Ca1a');
+            addOption(houseroomSelectField, 'Ca1b', 'Ca1b');
+        } else if (yearGroup === '0' || yearGroup === '1') {
+            addOption(houseroomSelectField, 'Leicester', 'Leicester');
+            addOption(houseroomSelectField, 'Maltby', 'Maltby');
+            addOption(houseroomSelectField, 'Walker', 'Walker');
+            addOption(houseroomSelectField, 'Chavasse', 'Chavasse');
+            addOption(houseroomSelectField, 'Wilkinson', 'Wilkinson');
+            addOption(houseroomSelectField, 'Callender', 'Callender');
+        }
+    }
+
+    // Function to add options to select field
+    function addOption(selectField, value, text) {
+        // Create an option and add it to field
+        var option = document.createElement('option');
+        option.value = value;
+        option.text = text;
+        selectField.add(option);
+    }
+
+    // Function to add an event listener to the year group field to update houseroom select field options, listens for change to value
+    function addEventListenerToYearGroupField() {
+        var yearGroupField = document.querySelector("#{{ registerForm.readerYearGroup.id }}");
+        yearGroupField.addEventListener("change", updateHouseroomOptions);
+    }
+</script>
+{% endblock %}
+<!--Call Javascript functions once the page has fully loaded-->
+{% block load%} onload="showAdminCode();updateHouseroomOptions();addEventListenerToYearGroupField();addEventListenerToPasswordField()" {% endblock%}
+{%block content%}
+    <h3>Register</h3>
+    <!--Create a HTML form element to display the registerForm and when POST request made send form data to register route-->
+    <form action="/register" method="POST">
+        {{registerForm.hidden_tag()}}
+        <p>{{registerForm.readerFirstName.label}}</p>
+        <p>{{registerForm.readerFirstName()}}
+        <p>{{registerForm.readerLastName.label}}</p>
+        <p>{{registerForm.readerLastName()}} 
+        <p>{{registerForm.readerUsername.label}}</p>
+        <p>{{registerForm.readerUsername()}}
+        <!--If there are any errors when valdiating the form display them on the page-->
+        {% if registerForm.errors %}
+            <ul>
+            {% for field, errors in registerForm.errors.items() %}
+                {% for error in errors %}
+                    <li style="color:red"><b>{{ error }}</b></li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+        <p>{{registerForm.readerPassword.label}}</p>
+        <span style="font-size:14px;"><b>(double-click password box)</b></span>
+        <p>{{registerForm.readerPassword()}}</p>
+        <!--Message to display when helping user enter valid password to register-->
+        <div id="message">
+            <h3>Your Password must contain the following:</h3>
+                <p id="letter" class="invalid">A <b>lowercase</b> letter</p>
+                <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
+                <p id="number" class="invalid">A <b>number</b></p>
+                <p id="length" class="invalid">Between <b>4-15 characters</b></p>
+                <p id="special" class="invalid">A special character from [@$!%*&]</p>
+        </div>
+        <!--Remaining registerForm fields-->
+        <p>{{registerForm.confirmPassword.label}}</p>
+        <p>{{registerForm.confirmPassword()}}
+        <p>{{registerForm.readerSchoolEmailAddress.label}}</p>
+        <p>{{registerForm.readerSchoolEmailAddress()}}
+        <p>{{registerForm.readerPersonalEmailAddress.label}}</p>
+        <p>{{registerForm.readerPersonalEmailAddress()}}              
+        <p>{{registerForm.readerDateOfBirth.label}}</p>
+        <p>{{registerForm.readerDateOfBirth()}}
+        <p>{{registerForm.readerYearGroup.label}}</p>
+        <p>{{registerForm.readerYearGroup()}}
+        <p>{{registerForm.readerHouseroom.label}}</p>
+        <p>{{registerForm.readerHouseroom()}}
+        <div id="adminCode" style="display:none;">
+        <p>{{registerForm.readerAdminCode.label}}</p>
+        <p>{{registerForm.readerAdminCode()}}
+        </div>
+        <p>{{registerForm.submit()}}</p>      
+    </form>
+    {%block script%}
+    {% endblock %}
+{% endblock %}

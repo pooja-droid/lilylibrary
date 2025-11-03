@@ -1,0 +1,69 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+    <script>
+        // Function to handle displaying the admin code field when user is logging in depending on whether the user has chosen to login as librarian or reader
+        function showAdminCode() {
+            // Get the admin code container
+            var enteredAdminCodeContainer = document.querySelector("#enteredAdminCode");
+            // Get the Login button and username and password fields container
+            var loginFieldsContainer = document.querySelectorAll(".loginFields")
+            // Get the Login as Reader button
+            var readerButton = document.querySelector("#readerLogin");
+            // Get the Login as Librarian button
+            var librarianButton = document.querySelector("#librarianLogin");
+
+            // Add an event listener for the reader login button, if clicked display the login fields and submit buttons
+            // Make the display of the admin code container 'none'
+            if (readerButton != null) {
+                readerButton.addEventListener("click", function() {
+                    loginFieldsContainer.forEach(x => x.style.display = "block")
+                    enteredAdminCodeContainer.style.display = "none";
+                });
+            }
+            
+            // Add an event listener to librarian login button, if clicked display the login fields and submit buttons
+            // Make the display of the admin code container 'block' so reader can enter admin code
+            if (librarianButton != null) {
+                librarianButton.addEventListener("click", function() {
+                    loginFieldsContainer.forEach(x => x.style.display = "block")
+                    enteredAdminCodeContainer.style.display = "block";
+                });
+            }
+        };
+    </script>
+{% endblock %}
+<!--Call javascript function when page has loaded-->
+{% block load %} onload="showAdminCode();" {% endblock%}
+{%block content%}
+    <!--Create login as a reader or librarian buttons-->
+    <button class="button" id="readerLogin">Login as Reader</button>
+    <button class="button" id="librarianLogin">Login as Librarian</button>
+    <!--Create HTML form element to display Login form fields, when POST request made submit data to login route-->
+    <form action="/login" method="POST">
+        <div class="loginFields" style="display:none">
+        {{loginForm.hidden_tag()}}
+        {{loginForm.enteredUsername.label}}
+        {{loginForm.enteredUsername()}}
+        {{loginForm.enteredPassword.label}}
+        {{loginForm.enteredPassword()}}
+        </div>
+        <div id="enteredAdminCode" style="display:none">
+        {{loginForm.enteredAdminCode.label}}
+        {{loginForm.enteredAdminCode()}}
+        </div>
+        <div class="loginFields" style="display:none">
+        {{loginForm.submit()}}
+        </div>
+    </form>
+
+    <!--If form validation errors display on page-->
+        {% if loginForm.errors %}
+                <ul>
+                {% for field, errors in loginForm.errors.items() %}
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                </ul>
+        {% endif %}
+{% endblock %}

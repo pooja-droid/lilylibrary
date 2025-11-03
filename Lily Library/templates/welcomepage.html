@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--This is my base html template from which templates for all other web pages will inherit from-->
+<html>
+    <head>
+        <!--Setting title and browser favicon and linking to welcomepage.css stylesheet in my static folder-->
+        <title>Lily Library MCS</title>
+        <link rel="icon" type="image/jpg" href="{{url_for('static', filename='images/MCSFavicon.png')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/welcomepage.css')}}">
+        <!--Linking to the font awesome library of icons-->
+        <script src="https://kit.fontawesome.com/10f2ddd703.js" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--Creating a navigation bar at the top of all my templates-->
+        <nav class="navbar">
+            <ul>
+                <li><a href="{{url_for('welcome')}}">Welcome</a></li>
+                <!--Checking if a user is loggedIn to the app and if not displaying the links to login and register pages-->
+                {% if not loggedIn %}
+                    <li><a href="{{url_for('register')}}">Register</a></li>
+                    <li><a href="{{url_for('login')}}">Login</a></li>
+                {% endif %}
+                <li><a href="{{url_for('home')}}">Home</a></li>
+                <!--Chcking if a user if loggedIn and if so the displaying the links to the browsebooks page and the logout page in the navabar-->
+                {% if loggedIn %}
+                    <li><a href="{{url_for('browsebooks')}}">Browse Books</a></li>
+                    <li><a href="{{url_for('logout')}}">Logout</a></li>
+                    <li id="accountLinks">
+                        <div id="notify">
+                            <!--Creates a user icon in the navbar and if there are any unread notifications displays these in a red circle on the icon-->
+                            <span id="usericon"><i class="fa-solid fa-user"></i></span>
+                            {% if numNotifications > 0 %}
+                                <span id="notification">{{numNotifications}}</span>
+                            {% endif %}
+                        </div>
+                        <!--When the user icon is hovered over, the links to the viewnotifications and accountdetails pages will appear-->
+                        <ul id="dropdownAccountLinks">
+                            <a href="{{url_for('viewnotifications')}}">
+                                <li>Notifications</li><br></a>
+                            <a href="{{url_for('accountdetails')}}">
+                            <li>My Account Details</li><br></a>
+                        </ul>
+                    </li>
+                {% endif %}
+              </ul> 
+        </nav>
+        <!--Create a jinja2 template block for the head of the document for child templates to fill-->
+        {% block head %}
+        {% endblock %}
+    </head>
+    <!--Create a jinja2 template block for the onload attribute of the document for child templates to fill with calls to Javascript functions-->
+    <body {%block load%} {%endblock%}>
+        <div class="container">
+            <!--Get all flashed messages that have been temporarily stored in the session and siaplay the to the user as feedback, with an X button to close them-->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flashMessages">
+                    {% for message in messages %}
+                        <div class="flashMessage">
+                            {{ message }}
+                            <span class="closeButton" onclick="this.parentElement.style.display='none';"><i class="fa-solid fa-xmark"></i></span>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <!--Create a jinja2 template block for the head of the document for child templates to fill with their main body content-->
+            {% block content%}
+            <!--Displaying the MCS logo, library name and buttons to login and register as well as the links in the navbar-->
+            <div>
+                <img src="{{url_for('static', filename='images/MCSFavicon.png')}}" alt="MCS Logo">
+            </div>
+                <h1>Lily Library MCS</h1>
+            <div>
+                <a href="{{url_for("login")}}"><button class"button">Login</button></a>
+                <a href="{{url_for("register")}}"><button class"button">Register</button></a>
+            </div>
+            {% endblock %}
+        </div>
+    </body>
+</html>

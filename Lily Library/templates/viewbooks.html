@@ -1,0 +1,55 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+    <script>
+        // Function to set up advanced search fields to search for book
+        function setUpSearchFields() {
+            // Get advanced search button and advanced search fields
+            var advancedSearchButton = document.getElementById("advancedSearch");
+            var advancedSearchFields = document.getElementById("advancedSearchFields");
+            
+            // add an event listener to the advanced search button so that when it is clicked the fields' display is toggled between 'none' and 'block'
+            advancedSearchButton.addEventListener("click", function() {
+                if (advancedSearchFields.style.display === "none") {
+                    advancedSearchFields.style.display = "block";
+                } else {
+                    advancedSearchFields.style.display = "none";
+                }
+            });
+        };
+    </script>
+{% endblock %}
+<!--Call the Javascript function when the page has fully loaded-->
+{%block load%} onload="setUpSearchFields();" {% endblock %}
+{% block content %}
+    <h3>Search Library Books</h3>
+    <!--Create a HTML form element to allow a librarian to search for books to delete in the library database, send data to viewbooks route with POST request-->
+    <form action="/viewbooks" method="POST">
+        {{searchForm.hidden_tag()}}
+        <!--Set up search bar-->
+        <div>
+            <h1>{{searchForm.searchString(placeholder="Search for the book to remove...")}}<button type="submit" name="search" value="x"><i class="fa-solid fa-magnifying-glass"></i></button></h1>
+            <button type="button" id="advancedSearch">Advanced Search</button>
+            <p>Order Results By: {{searchForm.orderByField()}} {{searchForm.orderByDirection()}}
+        </div>
+        <!--Allow librarian to search by more specific criteria-->
+        <div id="advancedSearchFields" style="display:none;">
+            <p>{{searchForm.authorFirstName.label}}</p><p>{{searchForm.authorFirstName()}}</p>
+            <p>{{searchForm.authorLastName.label}}</p><p>{{searchForm.authorFirstName()}}</p>
+            <p>{{searchForm.bookTitle.label}}</p><p>{{searchForm.bookTitle()}}</p>
+            <p>{{searchForm.bookISBN.label}}</p><p>{{searchForm.bookISBN()}}</p>
+            <p>{{searchForm.bookGenre.label}}</p><p>{{searchForm.bookGenre()}}</p>
+        </div>
+    </form>
+    <!--Display search results as clickable book cover images and button beneath to delete book from library, when clicked will redirec to delete book route-->
+    {% if searchResults %}
+        <h3>Search Results</h3>
+        <ul style="list-style-type:none;">
+            {% for result in searchResults %}
+                <li style="display:block"><a href="{{url_for('bookInfo', bookID=result[0])}}"><img src="{{result[2]}}" alt="{{ result }}" style="width: 100px; height: 150px;"></a>
+                <span style="display:inline-block">{{result[1]}}</span>
+                <a href="{{url_for('deletebook', bookID=result[0], bookTitle=result[1])}}"><button style="display:inline-block;">Delete All Copies of Book From Library</button></a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endblock %}

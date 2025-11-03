@@ -1,0 +1,45 @@
+{% extends "welcomepage.html" %} 
+{% block head %} 
+{% endblock %} 
+{%block content%}
+
+<p>
+  <!--Display username and whether user is logged in as a reader or a librarian-->
+  <h2>{{session['user_type']|capitalize}}: {{session['username']}}</h2>
+  <a href="{{url_for('browsebooks')}}"><button>Browse Books</button></a>
+  <a href="{{url_for('readinglists')}}"><button>Reading Lists</button></a>
+  <a href="{{url_for('viewreviews')}}"><button>View Your Reviews</button></a>
+  <a href="{{url_for('viewloans')}}"><button>View Your Loans</button></a>
+  <a href="{{url_for('viewreservations')}}"><button>View Your Reservations</button></a>
+  <!--If user is a librarian then display additional links for additional functionality available only to librarians-->
+  {% if session['user_type'] == "librarian" %}
+  <a href="{{url_for('reports')}}"><button>Reports</button></a>
+  <a href="{{url_for('manageaccounts')}}"><button>Manage Accounts</button></a>
+  <a href="{{url_for('addbook')}}"><button>Add Book</button></a>
+  <a href="{{url_for('viewbooks')}}"><button>Delete Book</button></a>
+  {% endif %}
+</p>
+<!--Create a HTML table to display the leaderboard of readers each month-->
+<h2>{{currentMonth}} Leaderboard</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Reader Username</th>
+                <th>Year Group</th>
+                <th>Number of Books read</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in leaderboard %}
+            <tr>
+                <td>&#35;{{ loop.index }}</td>
+                <td>{{ entry[0] }}</td>
+                <td>{{ entry[1] }}</td>
+                <td>{{ entry[2] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

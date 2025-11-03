@@ -1,0 +1,58 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+{% endblock %}
+{%block content%}
+    <!--Check is reader has unread notifications-->
+    {% if notifications%}
+        {% for notification in notifications%}
+            <!--For each notification check the notification type and accordingly display a notfication message-->
+            {% if 'Reservation' in notification%}
+                <div style="border:1px;border-color:green">
+                    <h3>Reservation Available!</h3>
+                    <div style="display:inline-block">
+                        <a href="{{url_for('bookInfo', bookID=notification[2])}}"><img src="{{notification[7]}}" alt="{{notification[2]}}" style="width: 200px; height: 300px;"></a>
+                    </div>
+                    <div style="display:inline-block;">
+                        <p>Your Reservation for {{notification[5]}} is fulfilled.</p>
+                    </div>
+                </div>
+            {% elif 'Return Loan' in notification%}
+                <div style="border:1px;border-color:orange">
+                    <h3>Loan Due Soon</h3>
+                    <div style="display:inline-block">
+                        <a href="{{url_for('bookInfo', bookID=notification[2])}}"><img src="{{notification[7]}}" alt="{{notification[2]}}" style="width: 200px; height: 300px;"></a>
+                    </div>
+                    <div style="display:inline-block;">
+                        <p>Your loan for {{notification[5]}} is due in 1 day on {{notification[6]}}.</p>
+                    </div>
+                </div>
+            {% elif 'Overdue Loan' in notification%}
+                <div style="border:1px;border-color:red">
+                    <h3>Overdue Loan</h3>
+                    <div style="display:inline-block">
+                        <a href="{{url_for('bookInfo', bookID=notification[2])}}"><img src="{{notification[7]}}" alt="{{notification[2]}}" style="width: 200px; height: 300px;"></a>
+                    </div>
+                    <div style="display:inline-block;">
+                        <p>Your loan for {{notification[5]}} was due on {{notification[6]}}. Return it to the library as soon as possible.</p>
+                    </div>
+                </div>
+            {% elif 'Cancelled Loan' in notification%}
+                <div style="border:1px;border-color:red">
+                    <h3>Cancelled Loan</h3>
+                    <div style="display:inline-block;">
+                        <p>Your loan for {{notification[5]}} was cancelled by the system as this book has been removed from the library.</p>
+                    </div>
+                </div>
+            {% elif 'Cancelled Reservation'%}
+                <div style="border:1px;border-color:red">
+                    <h3>Cancelled Reservation</h3>
+                    <div style="display:inline-block;">
+                        <p>Your reservation for {{notification[5]}} was cancelled by the system as this book has been removed from the library.</p>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>No new notifications.</p>
+    {% endif %}
+{% endblock %}

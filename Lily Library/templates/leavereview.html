@@ -1,0 +1,82 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+<!--Link to leavereview.css stylesheet whose styles will override certain styles in welcomepage.css but maintain the navbar and its styling-->
+    <link rel="stylesheet" href="{{url_for('static', filename='css/leavereview.css')}}">
+    <script>
+        // Function to handle star ratings
+        function colourStars() {
+            // Get all 5 star icons from document
+            var stars = document.querySelectorAll(".fa-star");
+            // Loop through each star icon
+            var i = 0;
+            while (i < stars.length) {
+                // Add an event listener to each star
+                stars[i].addEventListener("click", function() {
+                    // Get the rating numerical value fo the clicked star, e.g. thrid star clicked returns 3
+                    var currentStar = parseInt(this.getAttribute("data-star"));
+                    // Set the value of the hidden input field to rating value
+                    document.querySelector("#output").value = currentStar;
+
+                    // Colour the clicked star yellow and make the other stars grey
+                    var previousStar = currentStar;
+                    while (1 <= previousStar) {
+                        // Add is-active class the the previous star and all previous stars which will colour them all yellow
+                        if (!document.querySelector('.star-'+previousStar).classList.contains('is-active')) {
+                            document.querySelector('.star-'+previousStar).classList.add('is-active');
+                        }
+
+                        --previousStar;
+                    }
+                    // Deactivate any stars after the chosen clicked star
+                    var succeedingStar = currentStar+1;
+                    while (5 >= succeedingStar) {
+                        // Remove 'is-active' class from succeeding stars
+                        if(document.querySelector('.star-'+succeedingStar).classList.contains('is-active')) {
+                            document.querySelector('.star-'+succeedingStar).classList.remove('is-active');
+                        }
+                        // Move to next star
+                        ++succeedingStar;
+                    }
+
+                })
+                i++;
+            }
+        }
+    </script>
+{% endblock %}
+<!--Call the colourStars function when the page has loaded-->
+{% block load %} onload="colourStars();" {% endblock%}
+{% block content %}
+    <h3>Leave a Review</h3>
+        <!--HTML form element to leave a review, when POST request made data sent to leavereview route-->
+        <form action="{{ url_for('leavereview', bookID=bookID, bookTitle=bookTitle) }}" method="POST">
+            <!--Enable CSRF protection-->
+            {{reviewForm.hidden_tag()}}
+            <!--Input for review text-->
+            <p>{{reviewForm.reviewText.label}}</p>
+            <p>{{reviewForm.reviewText()}}</p>
+            <!--Display the rating star icons-->
+            <p>Rating:<p>
+            <p class="starRating">
+                <i class="fa-solid fa-star star-1" data-star="1"></i>
+                <i class="fa-solid fa-star star-2" data-star="2"></i>
+                <i class="fa-solid fa-star star-3" data-star="3"></i>
+                <i class="fa-solid fa-star star-4" data-star="4"></i>
+                <i class="fa-solid fa-star star-5" data-star="5"></i>
+            </p>
+            <!--Hidden input feld to store the value fo the selected star-->
+            <input type="number" name="rating" readonly id="output" style="display:none">
+            <p>{{reviewForm.leaveReview()}}</p>
+        </form>
+        <!-- Display form validation errors if any -->
+        {% if reviewForm.errors %}
+                <ul>
+                {% for field, errors in reviewForm.errors.items() %}
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                </ul>
+        {% endif %}
+{% endblock %}
+    

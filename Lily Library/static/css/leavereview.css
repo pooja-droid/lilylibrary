@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+}
+
+.starRating .fa-star{
+    color: grey;
+}
+
+.starRating .fa-star.is-active {
+    color: #fcba03;
+}
+
+.starRating .fa-star:not(.is-active):hover {
+    color: #fcba03;
+}

@@ -1,0 +1,18 @@
+{% extends "welcomepage.html" %} 
+{% block head %} 
+{% endblock %} 
+{%block content%}
+    <!--Creates a HTML form element to display the topReadersYearGroup form fields and sends librarian's chosen criteria to topreadersyeargroup route when POST request-->
+    <form action="/topreadersyeargroup" method="POST">
+        {{topReadersYearGroupForm.hidden_tag()}}
+        <p>{{topReadersYearGroupForm.number.label}}</p>
+        <p>{{topReadersYearGroupForm.number()}}</p>
+        <p>{{topReadersYearGroupForm.yearGroup.label}}</p>
+        <p>{{topReadersYearGroupForm.yearGroup()}}</p>
+        <p>{{topReadersYearGroupForm.startDate.label}}</p>
+        <p>{{topReadersYearGroupForm.startDate()}}</p>
+        <p>{{topReadersYearGroupForm.endDate.label}}</p>
+        <p>{{topReadersYearGroupForm.endDate()}}</p>
+        <p>{{topReadersYearGroupForm.enter()}}</p>
+    </form>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "welcomepage.html" %} 
+{% block head %}
+<script>
+    // Javascript function to generate HTML form datalist input elements base on the number of authors for a book
+    function generateDatalists() {
+        // Gets the number of authors field from the document
+        var numberOfAuthorsField = document.querySelector("#{{ addBookForm.numberOfAuthors.id }}");
+        // Gets the container where the created datalists will be inserted
+        var datalistInputContainer = document.querySelector("#datalistInputContainer");
+        // Set the innerHTMl of the container to empty string to remove any previous inputs and datalists from last call to this function
+        datalistInputContainer.innerHTML = '';
+
+        // Get the value of the number of authors from the field
+        var numberOfAuthors = parseInt(numberOfAuthorsField.value);
+
+        // Loop for number of authors and create input and datalist element for each
+        for (var i = 0; i < numberOfAuthors; i++) {
+            // Create an input element and specify parameters
+            var input = document.createElement("input");
+            input.type = "text";
+            input.setAttribute("list", "authors_" + i);
+            input.name = "author_" + i;
+            input.placeholder = "Select the name of the author or enter a new name..."
+            input.style.minWidth = "200px";
+
+            // Create a datalist element with a unique id depneding on which author iteration loop is on
+            var datalist = document.createElement("datalist");
+            datalist.id = "authors_" + i;
+            
+            // Loop to populate each datalist with all the possible author options from the Jinja2 template variable author options
+            {% for author in authorOptions %}
+                var option = document.createElement("option");
+                // Escape any HTML characters
+                option.value = "{{ author[0] | escape }}";
+                datalist.appendChild(option);
+            {% endfor %}
+            
+            // Append input, datalist and then line break to datalist container
+            datalistInputContainer.appendChild(input);
+            datalistInputContainer.appendChild(datalist);
+            datalistInputContainer.appendChild(document.createElement("br"));
+        }
+        // Datalist container in document will now be populated with X numbers of author inputs for the X number of authors, which will allow librarian to select mutliple co-authors and their names when adding a book to the library
+    }
+
+    // Function to add an eventListener to the number of authors field
+    function addEventListenerToNumberOfAuthorsField() {
+        var numberOfAuthorsField = document.querySelector("#{{ addBookForm.numberOfAuthors.id }}");
+        // When the value in the input changes, the generateDatalists function is called which will update the required number of inputs in datalist container
+        numberOfAuthorsField.addEventListener("change", generateDatalists);
+    }
+</script>
+{% endblock %} 
+<!--Call defined Javascript functions when the body content of the page has been fully loaded and all elements the functions interact with exist-->
+{% block load%} onload="generateDatalists();addEventListenerToNumberOfAuthorsField();" {% endblock%}
+{% block content%}
+    <h3>Add Book</h3>
+    <!--Defines a HTML form element to display the addBookForm and when it is submitted will send a POST request to addbook route-->
+    <form action="/addbook" method="POST">
+        <!--Enables CSRF protection-->
+        {{addBookForm.hidden_tag()}}
+
+        <!--Define a datalist element to display the names of all publishers who already exist in library database and allow librarian to either select existing publisher or enter the name of a new publisher-->
+        <input list="publishers" name="publisher" placeholder="Select a Publisher or enter a new Publisher... " id="publisher" minlength="1" maxlength="30" style="min-width:120px">
+        <datalist id="publishers">
+            {% for publisher in publisherOptions%}
+                <option value="{{ publisher }}">
+            {% endfor %}
+        </datalist>
+        <!--Displaying the rest of the addBookForm form fields-->
+        <p>{{addBookForm.yearPublished.label}}</p>
+        <p>{{addBookForm.yearPublished()}}</p>
+        <p>{{addBookForm.numberOfAuthors.label}}</p>
+        <p>{{addBookForm.numberOfAuthors()}}</p>
+        <div id="datalistInputContainer">
+        </div>
+        <p>{{addBookForm.bookTitle.label}}</p>
+        <p>{{addBookForm.bookTitle()}}</p>
+        <p>{{addBookForm.genre.label}}</p>
+        <p>{{addBookForm.genre(placeholder="e.g. Classic Literature/Romance")}}</p>
+        <p>{{addBookForm.isbn13.label}}</p>
+        <p>{{addBookForm.isbn13()}}</p>
+        <p>{{addBookForm.blurb.label}}</p>
+        <p style="min-width:500px;min-height:300px;">{{addBookForm.blurb()}}</p>
+        <p>{{addBookForm.minYearGroup.label}}</p>
+        <p>{{addBookForm.minYearGroup()}}</p>
+        <p>{{addBookForm.coverImageLink.label}}</p>
+        <p>{{addBookForm.coverImageLink()}}</p>
+        <p>{{addBookForm.numberOfCopies.label}}</p>
+        <p>{{addBookForm.numberOfCopies()}}</p>
+        <p>{{addBookForm.accessionNumber.label}}</p>
+        <p>{{addBookForm.accessionNumber()}}</p>
+        <p>{{addBookForm.addBook()}}</p>
+    </form>
+
+    <!--Iterate over any errors in form fields of addBookForm and if there are errors display the error message in list element on page-->
+    {% if addBookForm.errors %}
+    <ul>
+    {% for field, errors in addBookForm.errors.items() %}
+        {% for error in errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    {% endfor %}
+    </ul>
+    {% endif %}
+
+{% endblock %}

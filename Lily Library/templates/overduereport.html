@@ -1,0 +1,13 @@
+{% extends "welcomepage.html" %} 
+{% block head %} 
+{% endblock %} 
+{%block content%}
+    <!--Create HTML form element to display the overdueReport form and send date to overdueReportForm when POST request-->
+    <form action="/overduereports" method="POST">
+        {{overdueReportForm.hidden_tag()}}
+        <!--Allow librarian to generate overdue report for all loans that are X days overdue-->
+        <p>{{overdueReportForm.days.label}}</p>
+        <p>{{overdueReportForm.days()}}</p>
+        <p>{{overdueReportForm.enter()}}</p>
+    </form>
+{% endblock %}

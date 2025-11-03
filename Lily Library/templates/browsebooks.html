@@ -1,0 +1,197 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+    <!--Link to bookinfo.css stylesheet whose styles will override certain styles in welcomepage.css but maintain the navbar and its styling-->
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bookinfo.css')}}">
+    <script>
+        // Javascript function to set a up a toggle button for the advanced search fields
+        function setUpSearchFields() {
+            // Get the button and the advanced search fields
+            var advancedSearchButton = document.getElementById("advancedSearch");
+            var advancedSearchFields = document.getElementById("advancedSearchFields");
+            
+            // Add an event listener to the button so that when it is clicked the display of the advanced search fields is toggled between 'none' and 'block'
+            advancedSearchButton.addEventListener("click", function() {
+                if (advancedSearchFields.style.display === "none") {
+                    advancedSearchFields.style.display = "block";
+                } else {
+                    advancedSearchFields.style.display = "none";
+                }
+            });
+        };
+    </script>
+    <script>
+        // Javascript function to set up the show and hide search results buttons
+        function setUpResultsButton() {
+            // get show and hide buttons and the search results
+            var hideResultsButton = document.getElementById("hideResults");
+            var showResultsButton = document.getElementById("showResults");
+            var searchResults = document.getElementById("searchResults");
+
+            // Add an event listener to the hide results button so that when it is clicked, the display of the search results is set to 'none' the display of the hide results button is set to 'none' and the show results button is displayed on the page
+            if (hideResultsButton != null) {
+                hideResultsButton.addEventListener("click", function() {
+                    searchResults.style.display = "none";
+                    hideResultsButton.style.display = "none";
+                    showResultsButton.style.display = "block";
+                });
+            }
+            // Add an event listener to the show results button so that when it is clicked, the display of the search results is set to 'block' the display of the hide results button is set to 'block' and the show results button is no longer displayed on the page
+            if (showResultsButton != null) {
+                showResultsButton.addEventListener("click", function() {
+                    searchResults.style.display = "block";
+                    showResultsButton.style.display = "none";
+                    hideResultsButton.style.display = "block";
+                });
+            }
+        };
+    </script>
+    <script>
+        // Javascript to allow a user to navigate backwards and forwards through a shelf of books in a carousel-like fashion
+
+        // Initialise the start and end indexes so that initially all the books with indexes from 0-4 are displayed
+        var startIndex = 0;
+        var endIndex = 4;
+        
+        // Function to set up shelf navigation buttons
+        function setUpShelfButtons(shelfId, booksCount) {
+            // Function to handle when the "Previous" button is clicked
+            document.getElementById("prev_" + shelfId).addEventListener("click", function() {
+                if (startIndex > 0) {
+                    startIndex -= 1; // Decrement the start index to show previous book
+                    endIndex -= 1;   // Decrement the end index back to show previous book
+                    // Update the displayed bookshelf
+                    updateBookshelf(shelfId, startIndex, endIndex); 
+                }
+            });
+    
+            // Function to handle  when the "Next" button is clicked
+            document.getElementById("next_" + shelfId).addEventListener("click", function() {
+                if (endIndex < booksCount - 1) {
+                    startIndex += 1; // increment start index to diplay next book
+                    endIndex += 1;   // increment end index to display next book
+                    // Update the displayed bookshelf
+                    updateBookshelf(shelfId, startIndex, endIndex); 
+                }
+            });
+    
+            // Initial call to update the displayed bookshelf
+            updateBookshelf(shelfId, startIndex, endIndex);
+        }
+    
+        // Function to update the displayed bookshelf based on the startIndex and endIndex
+        function updateBookshelf(shelfId, startIndex, endIndex) {
+            // Get all book elements in a certain shelf with id of shelfId and class book
+            var books = document.querySelectorAll("#" + shelfId + " .book");
+            // For each book in the shelf, if its index falls between the range set by the start and end indexs, change its display to 'inline-block' so it is now visible, if not change it to 'none'
+            books.forEach(function(book, index) {
+                if (index >= startIndex && index <= endIndex) {
+                    book.style.display = "inline-block";
+                } else {
+                    book.style.display = "none";
+                }
+            });
+        }
+    </script>
+{% endblock %}
+<!--Set up the advanced search fields and search button to toggle them on page load-->
+<!--Set up the searchResults toggle button on page load-->
+{%block load%} onload="setUpSearchFields();setUpResultsButton();{% for bookshelf in bookshelves %}
+    <!--For each of the bookshelves in the template variable, if the number of books in their shelf is greater than 5 then sert up Previous and Next buttons for naviagtion as onyl 5 books are displayed on page in each shelf-->
+    {% if bookshelf[1]|length >= 5%}
+        setUpShelfButtons('{{bookshelf[0]}}', {{bookshelf[1]|length}});
+    {% endif %}
+<!--Set up the shelf buttons for the New Books shelf and the Recommended books shelf as these are passed in to template separate from bookshelves-->
+{% endfor %}setUpShelfButtons('newBookshelf', {{newBooks|length}});setUpShelfButtons('recommendedBookshelf', {{recommendedBooks|length}})" {% endblock%}
+{% block content %}
+<div>
+    <!--Create a HTML form element to display the searchForm fields and send form data to browsebooks route when POST request made-->
+    <form action="/browsebooks" method="POST">
+        <!--Enable CSRF protection-->
+        {{searchForm.hidden_tag()}}
+        <!--Display search bar and order by fields-->
+        <div>
+            <h1>{{searchForm.searchString(placeholder="Search...")}}<button type="submit" name="search" value="x"><i class="fa-solid fa-magnifying-glass"></i></button></h1>
+            <button type="button" id="advancedSearch">Advanced Search</button>
+            <p>Order Results By: {{searchForm.orderByField()}} {{searchForm.orderByDirection()}}
+        </div>
+        <!--Advanced search fields to be displayed if the above advancedSearch button is pressed-->
+        <div id="advancedSearchFields" style="display:none;">
+            <p>{{searchForm.authorFirstName.label}}</p><p>{{searchForm.authorFirstName()}}</p>
+            <p>{{searchForm.authorLastName.label}}</p><p>{{searchForm.authorLastName()}}</p>
+            <p>{{searchForm.bookTitle.label}}</p><p>{{searchForm.bookTitle()}}</p>
+            <p>{{searchForm.bookISBN.label}}</p><p>{{searchForm.bookISBN()}}</p>
+            <p>{{searchForm.bookGenre.label}}</p><p>{{searchForm.bookGenre()}}</p>
+        </div>
+    </form>
+    <!--Results of search query, for each result book cover (clickable link to bookinfo route) and book title is displayed-->
+    {% if searchResults %}
+        <h3 style="display:inline-block;">Search Results:</h3><span id="hideResults" style="display:block;"><!--Claret buttons are show and hide search results buttons to toggle display of results--><i class="fa-solid fa-caret-down"></i></span><span id="showResults" style="display:none;"><i class="fa-solid fa-caret-right"></i></span>
+        <ul id="searchResults" class="container">
+            {% for result in searchResults %}
+                <li style="display:block;background-color:#e7e6e2"><a href="{{url_for('bookInfo', bookID=result[0])}}"><img src="{{result[2]}}" alt="{{ result }}" style="width: 100px; height: 150px;"></a>
+                <span style="display:inline-block">{{result[1]}}</span></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <!--For each bookshelf create a div with unique id, iterate over all the books in the shelf and display book cover and book status, each cover is a clickable link to bookInfo route-->
+    <div class="bookshelves">
+        <div id="newBookshelf">
+            <h3>New Books</h3>
+            {% for bookTuple in newBooks %}
+                <div style="inline-block" class="book">
+                    <div><a href="{{url_for('bookInfo', bookID=bookTuple[0])}}">
+                        <img src="{{bookTuple[2]}}" alt="{{bookTuple[0]}}" style="width: 100px; height: 150px;display:block">
+                    </a></div>
+                    <div style="display:block"><button>{{bookTuple[1]}}</button></div>
+                </div>
+            {% endfor %}
+        </div>
+        <!--Set up previous and next buttons for each shelf to attach Javascript event listeners to, to navigate through shelf-->
+        {% if newBooks | length >= 5%}
+            <button id="prev_newBookshelf" type="button">Previous</button>
+            <button id="next_newBookshelf" type="button">Next</button>
+        {% endif %}
+        <hr>
+        <div id="recommendedBookshelf">
+            <h3>Recommended For You</h3>
+            <!--If there are recommendations for a reader display them like the other shelves if not, display a message to the reader-->
+            {% if recommendedBooks|length > 0 %}
+                {% for bookTuple in recommendedBooks %}
+                    {% if bookTuple%}
+                    <div style="inline-block" class="book">
+                        <div><a href="{{url_for('bookInfo', bookID=bookTuple[0])}}">
+                            <img src="{{bookTuple[2]}}" alt="{{bookTuple[0]}}" style="width: 100px; height: 150px; display:block;">
+                        </a></div>
+                        <div style="display:block"><button>{{bookTuple[1]}}</button></div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p>You currently have no recommendations, browse the site and loan or review books to receive customised recommendations.</p>
+            {% endif %}
+        </div>
+        {% if recommendedBooks | length >= 5%}
+            <button id="prev_recommendedBookshelf" type="button">Previous</button>
+            <button id="next_recommendedBookshelf" type="button">Next</button>
+        {% endif %}
+        <hr>
+    </div>
+    <!--Same setup as newBookshelf-->
+    {% for bookshelf in bookshelves%}
+        <div style="display:block" id="{{bookshelf[0]}}">
+            <h3>{{bookshelf[0]}} Books</h3>
+            {% for book in bookshelf[1]%}
+                <div style="display:inline-block" class="book">
+                    <div><a href="{{url_for('bookInfo', bookID=book[0])}}"><img src="{{book[2]}}" alt="{{book[0]}}" style="width: 100px; height: 150px; display:block;"></a></div>
+                    <div style="display:block"><button>{{book[1]}}</button></div>
+                </div>
+            {% endfor %}
+        </div>
+        {% if bookshelf[1] |length >= 5%}
+            <button id="prev_{{bookshelf[0]}}" type="button">Previous</button>
+            <button id="next_{{bookshelf[0]}}" type="button">Next</button>
+        {% endif %}
+        <hr>
+    {% endfor %}
+</div>
+{% endblock %}

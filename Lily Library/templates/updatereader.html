@@ -1,0 +1,49 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+{% endblock %}
+{%block content%}
+    <!--Display current details of selected user to librarian-->
+    <h4>Current Details</h4>
+    <p>Name: {{currentAccountDetails[0]}} {{currentAccountDetails[1]}}</p>
+    <p>Username: {{currentAccountDetails[2]}}</p>
+    <p>School Email Address: {{currentAccountDetails[3]}}</p>
+    <p>Personal Email Address: {{currentAccountDetails[4]}}</p>
+    {% if currentAccountDetails[5] == 1 %}
+        <p>Role: Librarian</p>
+    {% elif currentAccountDetails[5] == 0 %}
+        <p>Role: Staff</p>
+    {% else %}
+        <p>Year Group: {{currentAccountDetails[5]}}</p>
+    {% endif %}
+    <p>Houseroom: {{currentAccountDetails[6]}}</p>
+    <h5>Change any account details:</h5>
+    <!--Create a HTML form element to display the updateDetailsForm fields and send submitted date with POST request to update reader route-->
+    <form action="/updatereader/{{readerID}}" method="POST">
+        {{updateDetailsForm.hidden_tag()}}
+        <p>{{updateDetailsForm.readerFirstName.label}}</p>
+        <p>{{updateDetailsForm.readerFirstName()}}</p>
+        <p>{{updateDetailsForm.readerLastName.label}}</p>
+        <p>{{updateDetailsForm.readerLastName()}}</p>
+        <p>{{updateDetailsForm.readerUsername.label}}</p>
+        <p>{{updateDetailsForm.readerUsername()}}</p>
+        <p>{{updateDetailsForm.readerPersonalEmailAddress.label}}</p>
+        <p>{{updateDetailsForm.readerPersonalEmailAddress()}}</p>
+        <p>{{updateDetailsForm.readerSchoolEmailAddress.label}}</p>
+        <p>{{updateDetailsForm.readerSchoolEmailAddress()}}</p>
+        <p>{{updateDetailsForm.readerYearGroup.label}}</p>
+        <p>{{updateDetailsForm.readerYearGroup()}}</p>
+        <p>{{updateDetailsForm.readerHouseroom.label}}</p>
+        <p>{{updateDetailsForm.readerHouseroom()}}</p>
+        <p>{{updateDetailsForm.update()}}</p>
+    </form>
+    <!--Display any errors when validating the form-->
+    {% if updateDetailsForm.errors %}
+            <ul>
+            {% for field, errors in updateDetailsForm.errors.items() %}
+                {% for error in errors %}
+                    <li>{{field}} {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+{% endblock %}

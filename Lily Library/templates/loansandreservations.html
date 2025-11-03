@@ -1,0 +1,43 @@
+{% extends "welcomepage.html" %} 
+{% block head %} 
+{% endblock %} 
+{%block content%}
+    <!--If reader has active loans displays cover of book, loan start and end dates and a button for the librarian return the loan-->
+    {% if readerLoans%}
+        {% for loan in readerLoans %}
+            <div style="display:block;float:left">
+                <div style="display:inline-block">
+                    <a href="{{url_for('bookInfo', bookID=loan[2])}}"><img src="{{loan[5]}}" alt="{{loan[2]}}" style="width: 200px; height: 300px;"></a>
+                </div>
+                <div style="display:inline-block;">
+                    <p>Loan Start Date: {{loan[3]}}</p>
+                    <p>Loan End Date: {{loan[4]}}</p>
+                    <a href="{{url_for('returnloan', loanID=loan[0], copyID=loan[1], bookID=loan[2])}}"><button>Return</button></a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No active loans</p>
+    {% endif %}
+    <!--If reader has pending reservations displays book cover, reservation status, date reservationmade, position in the queue and a button for the librarian to cancel the reservation-->
+    {% if readerReservations%}
+        {% for reservation in readerReservations %}
+            <div style="display:block;float:left">
+                <div style="display:inline-block">
+                    <a href="{{url_for('bookInfo', bookID=reservation[1])}}"><img src="{{reservation[6]}}" alt="{{reservation[1]}}" style="width: 200px; height: 300px;"></a>
+                </div>
+                <div style="display:inline-block;">
+                    <p>Book Title: {{reservation[0]}}</p>
+                    <p>Reservation Status: {{reservation[2]}}</p>
+                    <p>Reservation Date: {{reservation[3]}}</p>
+                    <p>Their position in the queue: {{reservation[4]}}</p>
+                    <a href="{{url_for('cancelreservation', bookID=reservation[1], reservationID=reservation[5])}}"><button>Cancel</button></a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No pending reservations</p>
+    {% endif %}
+    <!--Link to redirect user back to manage accounts landing page-->
+    <a href="{{url_for('manageaccounts')}}"><button>Return to Manage Accounts</button></a>
+{% endblock %}

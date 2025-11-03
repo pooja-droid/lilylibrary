@@ -1,0 +1,155 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+    <!--Link to bookinfo.css stylesheet whose styles will override certain styles in welcomepage.css but maintain the navbar and its styling-->
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bookinfo.css')}}">
+        <script>
+            // Function to set a toggle button to display more reviews than the default up to 5 on the page
+            function setUpExtraReviews() {
+                // Get the extra reviews button
+                var extraReviewsButton = document.getElementById("extraReviewsButton");
+                // Get all the extra reviews which are any reviews after the first 5
+                var extraReviews = document.getElementById("extraReviews");
+                // The extra reviews button is only created if there are more than 5 reviews for a book, so check if it exists
+                if (extraReviewsButton != null) {
+                    // Add an event listener to the button so that when the button is clicked, if the extra reviews are not beign displayed their display is set to block and the text of the button changes to 'Hide Reviews' and if the button is clicked again, the display of the extra reviews is set to None and the text of the button is reset to 'See More Reviews'
+                    extraReviewsButton.addEventListener("click", function() {
+                        if (extraReviews.style.display === "none") {
+                            extraReviews.style.display = "block";
+                            extraReviewsButton.innerHTML = "Hide Reviews"
+                        } else {
+                            extraReviews.style.display = "none";
+                            extraReviewsButton.innerHTML = "See More Reviews"
+                        }
+                    });
+                } 
+            }
+
+            // Function to set up button to display readingListForm fields
+            function setUpReadingListButton() {
+                // Get the button and the reading list form fields elements
+                var readingListButton = document.getElementById("readingListButton");
+                var readingListFields = document.getElementById("readingListFormFields");
+
+                // Check if the button exists
+                if (readingListButton != null) {
+                // Add an event listener to the button so that when the button is clicked the display style of the reading list form fields is toggled between 'none' and 'block'
+                    readingListButton.addEventListener("click", function() {
+                        if (readingListFields.style.display === "none") {
+                            readingListFields.style.display = "block";
+                        } else {
+                            readingListFields.style.display = "none";
+                        }
+                    });
+                }
+            }
+        </script>
+{% endblock %}
+<!--Call the Javascript functions when the body of the page has fully loaded-->
+{% block load %} onload="setUpExtraReviews();setUpReadingListButton();" {% endblock%}
+{% block content %}
+    <div class="container">
+        <!--Display the coverimage of the book and whether it is available to loan or reserve-->
+        <div class="leftDiv">
+            <img src="{{bookinfo[0][9]}}" alt="{{bookinfo[0][0]}}" style="width: 200px; height: 300px;">
+            {% if bookinfo[0][12] == "Loan Book"%}
+                <button onclick="window.location.href='{{url_for("loanbook", bookID=bookinfo[0][0], bookTitle=bookinfo[0][2])}}'" style="display:block">{{bookinfo[0][12]}}</button>
+            {% else %}
+                <a href="{{url_for('reservebook', bookID=bookinfo[0][0], bookTitle=bookinfo[0][2])}}><button style="display:block">{{bookinfo[0][12]}}</button></a>
+            {% endif %}
+            <!--Create reading list button to toggle reading list form-->
+            <button type="button" id="readingListButton">Add To Reading List</button>
+            <div id="readingListFormFields" style="display:none">
+                <!--Create a HTML form element to display the readingListForm fields whose data will be sent to the bookInfo route when a POST request is made-->
+                <form action="{{url_for('bookInfo', bookID=bookinfo[0][0])}}" method="POST">
+                    <!--Enable CSRF protection-->
+                    {{readingListForm.hidden_tag()}}
+                    <p>Add to Existing or New List</p>
+                    <p>{{readingListForm.readingList.label}} {{readingListForm.readingList()}}</p>
+                    <p>{{readingListForm.newList.label}} {{readingListForm.newList()}}</p>
+                    <p>{{readingListForm.readOrNot.label}}</p> <p>{{readingListForm.readOrNot()}}</p>
+                    <p>{{readingListForm.addToList()}}</p>
+                </form>
+            </div>
+            <!--If there are any validation errors etc in the form when submitted display each error in a list element on the page-->
+            {% if readingListForm.errors %}
+            <ul>
+            {% for field, errors in readingListForm.errors.items() %}
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+            {% endif %}
+            <!--Display information about the book-->
+            <p>Published: {{bookinfo[0][4]}}</p>
+            <p>Publisher: {{bookinfo[0][5]}}</p>
+            <div class="ratingsSection">
+                <h3>Ratings</h3>
+                    <!--If there are ratings for the book display a ratings distribution beneath the cover so reader can see percentage of 1, 2, 3, 4, and 5 star reviews each for a book-->
+                    {% if ratingPercentage %}
+                        {% for i in range(1, 6) %}
+                            {% if ratingPercentage[i] is defined %}
+                                <div class="ratingBar">
+                                    <div class="rating">
+                                        <span>{{ i }} star &#40;{{ratingPercentage[i]|round(2)}}&#37;&#41;</span>
+                                        <span class="bar" style="width:{{ ratingPercentage[i] }}%"></span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p>No ratings yet.</p>
+                    {% endif %}
+            </div>
+        </div>
+        <!--Display author of book, calcualted average rating, blurb and what reading lists it appears in-->
+        <div class="middleDiv">
+            <h3>{{bookinfo[0][2]}}</p>
+            <h4>Wrriten by: {{bookinfo[0][6]}} {{bookinfo[0][7]}}</h4>
+            <p>Average Rating: {{bookinfo[0][11]}}</p><p>Number of Reviews: {{bookinfo[0][10]}}</p>
+            <h4>Blurb</h4>
+            <p>{{bookinfo[0][8]}}</p>
+            {% if tags%}
+            <p style="color:grey;">Shelved under: {% for tag in tags%} {{tag[0]}} | {%endfor%}</p>
+            {% endif %}
+            </div>
+        
+        <!--Display a 'Leave A Review' button that will redirect a user to the leavereview route-->
+        <div class="rightDiv reviews">
+            <a href="{{url_for('leavereview', bookID=bookinfo[0][0], bookTitle=bookinfo[0][2])}}"><button>Leave A Review</button></a>
+            <!--Display the first 5 reviews for a book with their respective star rating beneath them-->
+            <h3>Reviews</h3>
+            {% for review in bookReviews[:5]%}
+                <p>{{review[3]}} {{review[4]}}</p>
+                <span>{{review[2]}}</span>
+                <p>Star rating:</p>
+                {% for star in range(review[1]) %}
+                    <i class="fa-solid fa-star"></i>
+                {% endfor %}
+                {% for star in range(5 - review[1]) %}
+                <i class="fa-solid fa-star" style="color:grey;"></i>
+                {% endfor %}
+                <p>{{review[0]}}</p>
+            {% endfor %}
+            <!--If there are more than 5 reviews for a book, create a see extra review button and iterate over the remaining reviews but in a container with display style of none-->
+            {% if bookReviews|length > 5 %}
+                <button type="button" id="extraReviewsButton">See More Reviews</button>
+                <div id="extraReviews" style="display:none">
+                    {% for review in bookReviews[5:]%}
+                        <p>{{review[3]}} {{review[4]}}</p>
+                        <span>{{review[2]}}</span>
+                        <p>Star rating:</p>
+                        {% for star in range(review[1]) %}
+                            <i class="fa-solid fa-star"></i>
+                        {% endfor %}
+                        {% for star in range(5 - review[1]) %}
+                            <i class="fa-solid fa-star" style="color:grey;"></i>
+                        {% endfor %}
+                        <p>{{review[0]}}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        <div>
+        
+    <div>
+{% endblock %}

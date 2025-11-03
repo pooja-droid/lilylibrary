@@ -1,0 +1,9 @@
+{% extends "welcomepage.html" %} 
+{% block head %} 
+{% endblock %} 
+{%block content%}
+    <!--Display either the exisitng report selected by the librarian or the new report they have just created-->
+    <h4>View Report Below</h4>
+    <!--Call the download report route which will return the report PDF in a PDF viewer format and will allow librarian to view/print/download report-->
+    <embed src="{{ url_for('downloadreport') }}" type="application/pdf" width="100%" height="600px">
+{% endblock %}

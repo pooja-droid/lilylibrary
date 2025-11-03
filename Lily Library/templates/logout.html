@@ -1,0 +1,16 @@
+{% extends "welcomepage.html" %}
+{%block content%}
+
+<!--Display logout message to reader-->
+<h3>Thank you for visiting Lily Library. You have logged out.</h3>
+<script>
+    // Function to redirect to the welcome page once the user has logged out after a delay of 3000 milliseconds (3 seconds)
+    function redirectToWelcomePage() {
+        window.location.replace("{{url_for('welcome')}}");
+    };
+    // Execute the function once page has fully loaded
+    window.onload = setTimeout(redirectToWelcomePage, 3000);
+    
+</script>
+
+{% endblock %}

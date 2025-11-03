@@ -1,0 +1,22 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+{% endblock %}
+{%block content%}
+    <!--If reader has active loans display each book cover image, loan star date, loan end date and button to return loan which will redirect to returnloan route-->
+    {% if readerLoans%}
+        {% for loan in readerLoans %}
+            <div style="display:block;float:left">
+                <div style="display:inline-block">
+                    <a href="{{url_for('bookInfo', bookID=loan[2])}}"><img src="{{loan[5]}}" alt="{{loan[2]}}" style="width: 200px; height: 300px;"></a>
+                </div>
+                <div style="display:inline-block;">
+                    <p>Loan Start Date: {{loan[3]}}</p>
+                    <p>Loan End Date: {{loan[4]}}</p>
+                    <a href="{{url_for('returnloan', loanID=loan[0], copyID=loan[1], bookID=loan[2])}}"><button>Return</button></a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No active loans</p>
+    {% endif %}
+{% endblock %}

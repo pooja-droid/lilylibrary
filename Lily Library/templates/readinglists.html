@@ -1,0 +1,66 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+    <style>
+        body {
+            background-color:#e7e6e2;
+        }
+    </style>
+    <script>
+        // Function to toggle the visibility of books in a reading list shelf based on their status
+        function toggleShelfVisibility(shelfTitle) {
+            // Get the hide and show read buttons for each shelf
+            const hideButton = document.getElementById(shelfTitle + "hideRead");
+            const showButton = document.getElementById(shelfTitle + "showRead");
+            // Get all the books in the sheld that have a class of Read
+            const readBooks = document.querySelectorAll("." + shelfTitle + ".Read");
+        
+            // Add an event listener to the hide button so that when it is clicked the visibility of all read books is hidden
+            hideButton.addEventListener("click", function() {
+                readBooks.forEach(book => {
+                    book.style.visibility= "hidden";
+                });
+                // Hide the hide button from the page and display the show button
+                hideButton.style.display = "none";
+                showButton.style.display = "block";
+            });
+            // Add an event listener to the show button so that when it is clicked all read books are visible again
+            showButton.addEventListener("click", function() {
+                readBooks.forEach(book => {
+                    book.style.visibility = "visible";
+                });
+                // Show the hide button on the page and hide the show button
+                hideButton.style.display = "block";
+                showButton.style.display = "none";
+            });
+        }
+    </script>
+{% endblock %}
+<!--Call the Javascript function for each reading list shelf when the page is loaded to set up the toggle behaviour-->
+{% block load %} onload="{%for title, books in readingLists.items()%} {% set shelfID = title|replace(' ', '') %}toggleShelfVisibility('{{shelfID}}'); {% endfor %}"{% endblock %}
+
+{%block content%}
+    <!--If the reader has created reading lists for each reading lists display the title and all the books in the list, by showing a clickable cover image and whether they have been read or not-->
+    {% if readingLists %}
+        {% for title, books in readingLists.items() %}
+            <h4>{{ title }}</h4>
+            {% set shelfID = title|replace(' ', '') %}
+            <!--Set up hide and show read buttons-->
+            <button id="{{shelfID}}hideRead">Hide Read Books</button>
+            <button id="{{shelfID}}showRead" style="display:none">Show Read Books</button>
+            <ul>
+                {% for bookID, status, coverimageURL in books %}
+                    <div class="{{shelfID}} {{status}}" style="display:inline-block">
+                        <div style="display:inline-block;"><div><a href="{{url_for('bookInfo', bookID=bookID)}}"><img src="{{coverimageURL}}" alt="{{bookID}}" style="width: 100px; height: 150px; display: inline-block;"></a></div>
+                        {% if status == 'Read' %}
+                            <div style="display:inline-block;"><button>Read</button></div></div>
+                        {% else %}
+                            <div style="display:inline-block;"><button>Want To Read</button></div></div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>You currently have no Reading Lists</p>
+    {% endif %}
+{% endblock %}

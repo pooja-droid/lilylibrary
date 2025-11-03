@@ -1,0 +1,18 @@
+{% extends "welcomepage.html" %} 
+{% block head %} 
+{% endblock %} 
+{%block content%}
+    <!--Creates a HTML form element to display the topReadersGenreTime form fields and sends librarian's chosen criteria to topreadersgenretime route when POST request-->
+    <form action="/topreadersgenretime" method="POST">
+        {{topReadersGenreTimeForm.hidden_tag()}}
+        <p>{{topReadersGenreTimeForm.number.label}}</p>
+        <p>{{topReadersGenreTimeForm.number()}}</p>
+        <p>{{topReadersGenreTimeForm.genre.label}}</p>
+        <p>{{topReadersGenreTimeForm.genre()}}</p>
+        <p>{{topReadersGenreTimeForm.startDate.label}}</p>
+        <p>{{topReadersGenreTimeForm.startDate()}}</p>
+        <p>{{topReadersGenreTimeForm.endDate.label}}</p>
+        <p>{{topReadersGenreTimeForm.endDate()}}</p>
+        <p>{{topReadersGenreTimeForm.enter()}}</p>
+    </form>
+{% endblock %}

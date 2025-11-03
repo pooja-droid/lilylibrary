@@ -1,0 +1,15 @@
+{% extends "welcomepage.html" %}
+{% block head %}
+{% endblock %}
+{%block content%}
+    <h3>Enter Your Email</h3>
+    <!--HTML Form element to display enterEmail form to allow user to enter their email in order to change their password, form data is sent to enterEmail route on POST request-->
+    <form action="/enterEmail" method="POST">
+        {{enterEmailForm.hidden_tag()}}
+        <p>{{enterEmailForm.enteredSchoolEmail.label}}</p>
+        <p>{{enterEmailForm.enteredSchoolEmail()}}</p>
+        <p>{{enterEmailForm.enteredPersonalEmail.label}}</p>
+        <p>{{enterEmailForm.enteredPersonalEmail()}}</p>
+        <p>{{enterEmailForm.submit()}}</p>
+    </form>
+{% endblock %}

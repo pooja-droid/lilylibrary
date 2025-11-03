@@ -1,0 +1,29 @@
+{% extends "welcomepage.html" %} 
+{% block head %} 
+{% endblock %} 
+{%block content%}
+    <!--Create a HTMl form element to display the reportForm to allow a librarian to select whether they would like to retrieve an existing report or make a new report and send this data with POST request to reports route-->
+    <form action="/reports" method="POST">
+        {{reportForm.hidden_tag()}}
+        {% if reportForm.oldReportChoice.choices %}
+            <p>{{reportForm.oldReportChoice.label}}</p>
+            <p>{{reportForm.oldReportChoice()}}</p>
+            <p>Select None for new report if you have already selected an existing report.</p>
+        {% else %}
+            <p>No existing reports.</p>
+        {% endif %}
+        <p>{{reportForm.newReportChoice.label}}</p>
+        <p>{{reportForm.newReportChoice()}}</p>
+        <p>{{reportForm.select()}}</p>
+    </form>
+    <!--If any errors when validating form display on page-->
+    {% if reportForm.errors %}
+        <ul>
+            {% for field, errors in reportForm.errors.items() %}
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

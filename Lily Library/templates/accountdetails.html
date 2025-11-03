@@ -1,0 +1,23 @@
+<!--Inherits from the welcompage.html template-->
+{% extends "welcomepage.html" %}
+{% block head %}
+{% endblock %}
+{%block content%}
+    <!--Displays a reader's current account details to them-->
+    <h4>Current Details</h4>
+    <p>Name: {{accountDetails[0]}} {{accountDetails[1]}}</p>
+    <p>Username: {{accountDetails[2]}}</p>
+    <p>School Email Address: {{accountDetails[3]}}</p>
+    <p>Personal Email Address: {{accountDetails[4]}}</p>
+    {% if accountDetails[5] == 1 %}
+        <p>Role: Librarian</p>
+    {% elif accountDetails[5] == 0 %}
+        <p>Role: Staff</p>
+    {% else %}
+        <p>Year Group: {{accountDetails[5]}}</p>
+    {% endif %}
+    <p>Houseroom: {{accountDetails[6]}}</p>
+    <!--Reader can click on  buttons below to redirect to the changepassword route or to the changeemail route-->
+    <a href="{{url_for('changePassword')}}"><button>Change Password</button></a>
+    <a href="{{url_for('changeEmail')}}"><button>Change Personal Email</button></a>
+{% endblock %}
